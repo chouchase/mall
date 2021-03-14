@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chouchase.dao.ProductDao">
+    <insert id="insertProduct">
+        insert into mall_product(category_id, name, subtitle, main_image, sub_images, detail, price, stock, status,
+                                 create_time, update_time)
+        values (#{categoryId}, #{name}, #{subtitle}, #{mainImage}, #{subImages}, #{detail}, #{price}, #{stock},
+                #{status}, now(), now())
+    </insert>
+    <update id="updateProductSelective">
+        update mall_product
+        <set>
+            <if test="categoryId != null">
+                category_id = #{categoryId},
+            </if>
+            <if test="name != null">
+                name = #{name},
+            </if>
+            <if test="subtitle != null">
+                subtitle = #{subtitle},
+            </if>
+            <if test="mainImage != null">
+                main_image = #{mainImage},
+            </if>
+            <if test="subImage != null">
+                sub_images = #{subImages},
+            </if>
+            <if test="detail != null">
+                detail = #{detail},
+            </if>
+            <if test="price != null">
+                price = #{price},
+            </if>
+            <if test="stock != null">
+                stock = #{stock},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+            update_time = now()
+        </set>
+        where id = #{id}
+    </update>
+    <select id="checkId" resultType="int">
+        select count(1)
+        from mall_product
+        where id = #{id}
+    </select>
+    <update id="updateProductStatus">
+        update mall_product
+        set status = #{status}
+        where id = #{id}
+    </update>
+    <select id="selectProductByPrimaryKey" resultType="product">
+        select id,
+               category_id,
+               name,
+               subtitle,
+               main_image,
+               sub_images,
+               detail,
+               price,
+               stock,
+               status,
+               create_time,
+               update_time
+        from mall_product
+        where id = #{id}
+    </select>
+    <select id="selectProducts" resultType="product">
+        select id,
+               category_id,
+               name,
+               subtitle,
+               main_image,
+               sub_images,
+               detail,
+               price,
+               stock,
+               status,
+               create_time,
+               update_time
+        from mall_product
+        order by id asc
+    </select>
+    <select id="selectProductsByProductNameAndProductId" resultType="product">
+        select id,category_id,name,subtitle,main_image,sub_images,detail,price,stock,status,create_time,update_time
+        from mall_product
+        <where>
+            <if test="productName != null">
+                and name like #{productName}
+            </if>
+            <if test="productId != null">
+                and id = #{productId}
+            </if>
+        </where>
+    </select>
+    <select id="selectProductsByKeywordAndCategoryIds" resultType="product">
+        select id,category_id,name,subtitle,main_image,sub_images,detail,price,stock,status,create_time,update_time
+        from mall_product
+        <where>
+            <if test="keyword != null">
+                and name like #{keyword}
+            </if>
+            <if test="categoryIds != null">
+                and category_id in
+                <foreach collection="categoryIds" index="index" item="item" open="(" close=")" separator=",">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+    </select>
+</mapper>

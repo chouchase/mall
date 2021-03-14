@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chouchase.dao.CartDao">
+    <sql id="base_column">
+        id,user_id,product_id,quantity,checked,create_time,update_time
+    </sql>
+    <insert id="insert">
+        insert into mall_cart(<include refid="base_column"/>)
+        values(#{id},#{userId},#{productId},#{quantity},#{checked},now(),now())
+    </insert>
+    <update id="updateByPrimaryKeySelective">
+        update mall_cart
+        <set>
+            <if test="userId != null">
+                user_id = #{userId},
+            </if>
+            <if test="productId != null">
+                product_id = #{productId},
+            </if>
+            <if test="quantity != null">
+                quantity = #{quantity},
+            </if>
+            <if test="checked != null">
+                checked = #{checked},
+            </if>
+            update_time = now()
+        </set>
+        where id = #{id}
+    </update>
+    <delete id="deleteProductByUserIdProductIds">
+        delete from mall_cart
+        where user_id = #{userId}
+        <if test="productIdList != null">
+            and product_id in
+            <foreach collection="productIdList" item="item" index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+    </delete>
+    <select id="checkAllChecked" resultType="integer">
+        select count(1)
+        from mall_cart
+        where user_id = #{userId}
+        and checked = 0
+    </select>
+    <select id="selectByUserIdAndProductId" resultType="cart">
+        select <include refid="base_column" />
+        from mall_cart
+        where user_id = #{userId}
+        and product_id = #{productId}
+    </select>
+    <select id="selectByUserId" resultType="cart">
+        select <include refid="base_column" />
+        from mall_cart
+        where user_id = #{userId}
+    </select>
+    <select id="countCartQuantity" resultType="integer">
+        select IFNULL(count(quantity),0)
+        from mall_cart
+        where user_id = #{userId}
+    </select>
+    <update id="updateChecked">
+        update mall_cart
+        set checked = #{checked},
+            update_time = now()
+        where user_id = #{userId}
+        <if test="productId != null">
+            and product_id = #{productId}
+        </if>
+    </update>
+</mapper>
