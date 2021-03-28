@@ -10,5 +10,5 @@ public interface CategoryService {
     public ServerResponse<String> addCategory(Integer parentId,String categoryName);
     public ServerResponse<String> changeCategoryName(Integer id, String categoryName);
     public ServerResponse<List<Category>> getCategory(Integer parentId);
-    public ServerResponse<Set<Integer>> getDeepCategoryId(Integer parentId);
+    public ServerResponse<List<Integer>> getDeepCategoryId(Integer parentId);
 }

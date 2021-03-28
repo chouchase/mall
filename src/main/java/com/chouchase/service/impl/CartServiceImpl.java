@@ -37,7 +37,7 @@ public class CartServiceImpl implements CartService {
         if (cartItem != null) {
             Cart newItem = new Cart();
             newItem.setId(cartItem.getId());
-            newItem.setQuantity(cartItem.getQuantity() + count);
+            newItem.setQuantity(Math.max(1,cartItem.getQuantity() + count));
             cartDao.updateByPrimaryKeySelective(newItem);
         } else {//如果不存在于购物车，则需要新建一条记录
             cartItem = new Cart();
@@ -45,7 +45,9 @@ public class CartServiceImpl implements CartService {
             cartItem.setProductId(productId);
             cartItem.setChecked(Const.Cart.checked);
             cartItem.setUserId(userId);
-            cartDao.insert(cartItem);
+            if(cartItem.getQuantity() >= 1) {
+                cartDao.insert(cartItem);
+            }
         }
         CartVo cartVo = getCartVoLimit(userId);
         return ServerResponse.createSuccessResponseByData(cartVo);
@@ -114,7 +116,6 @@ public class CartServiceImpl implements CartService {
         }
         cartVo.setCartProductList(cartProductList);
         cartVo.setCartTotalPrice(cartTotalPrice);
-        cartVo.setImageHost(PropertiesUtil.getProperty("ftp.server.http.prefix"));
         cartVo.setAllChecked(getAllChecked(userId));
         return cartVo;
     }
@@ -127,7 +128,7 @@ public class CartServiceImpl implements CartService {
     public ServerResponse<CartVo> update(Integer userId, Integer productId, Integer count) {
         Cart cart = cartDao.selectByUserIdAndProductId(userId,productId);
         if(cart != null){
-            cart.setQuantity(count);
+            cart.setQuantity(Math.max(1,count));
         }else{
             return ServerResponse.createFailResponseByMsg("商品不存在，更新错误");
         }

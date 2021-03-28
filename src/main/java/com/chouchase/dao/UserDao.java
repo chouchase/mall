@@ -7,14 +7,6 @@ import org.apache.ibatis.annotations.Param;
 public interface UserDao {
     //查询用户名是否存在
     public int checkUsername(String username);
-    //查询邮箱是否存在
-    public int checkEmail(String Email);
-    //查询手机号码是否存在
-    public int checkPhone(String Phone);
-    //查询邮箱是否被其他用户占用
-    public int checkEmailByUserId(@Param("email") String Email, @Param("id") Integer id);
-    //查询手机号码是否被其他用户占用
-    public int checkPhoneByUserId(@Param("phone") String Phone, @Param("id") Integer id);
     //插入新用户
     public int insertUser(User user);
     //根据用户名和密码获取用户

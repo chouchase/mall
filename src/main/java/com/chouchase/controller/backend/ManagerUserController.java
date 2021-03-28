@@ -37,7 +37,16 @@ public class ManagerUserController {
         if(StringUtils.isAnyBlank(user.getUsername(),user.getPassword())){
             return ServerResponse.createFailResponseByMsg("参数错误");
         }
+        user.setUpdateTime(null);
+        user.setCreateTime(null);
+        user.setId(null);
         user.setRole(Const.Role.ADMIN);
         return userService.register(user);
+    }
+    @RequestMapping(value = "/logout", method = RequestMethod.GET)
+    public ServerResponse<String> logout(HttpSession session) {
+        //从Session对象中移除当前用户
+        session.removeAttribute(Const.CURRENT_USER);
+        return ServerResponse.createSuccessResponseByMsg("退出成功");
     }
 }

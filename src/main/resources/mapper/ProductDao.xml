@@ -24,7 +24,7 @@
             <if test="mainImage != null">
                 main_image = #{mainImage},
             </if>
-            <if test="subImage != null">
+            <if test="subImages != null">
                 sub_images = #{subImages},
             </if>
             <if test="detail != null">

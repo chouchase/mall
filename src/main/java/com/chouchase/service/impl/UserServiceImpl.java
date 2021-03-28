@@ -29,25 +29,7 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    public ServerResponse<String> checkEmail(String email) {
-        //查询电子邮箱
-        int count = userDao.checkEmail(email);
-        if (count > 0) {
-            return ServerResponse.createFailResponseByMsg("邮箱已存在");
-        } else {
-            return ServerResponse.createSuccessResponseByMsg("校验成功");
-        }
-    }
 
-    public ServerResponse<String> checkPhone(String phone) {
-        //查询手机号码
-        int count = userDao.checkPhone(phone);
-        if (count > 0) {
-            return ServerResponse.createFailResponseByMsg("电话号码已存在");
-        } else {
-            return ServerResponse.createSuccessResponseByMsg("校验成功");
-        }
-    }
 
     @Override
     public ServerResponse<String> register(User user) {
@@ -55,15 +37,7 @@ public class UserServiceImpl implements UserService {
         if (userDao.checkUsername(user.getUsername()) > 0) {
             return ServerResponse.createFailResponseByMsg("用户名已存在");
         }
-        //检查邮箱地址是否存在
-        if (userDao.checkEmail(user.getEmail()) > 0) {
-            return ServerResponse.createFailResponseByMsg("邮箱已存在");
-        }
-        //检查电话号码是否存在
-        if (userDao.checkPhone(user.getPhone()) > 0) {
-            return ServerResponse.createFailResponseByMsg("电话号码已存在");
-        }
-        //密码加密
+
         user.setPassword(MD5Utils.encrypt(user.getPassword()));
         //加入数据库
         int cnt = userDao.insertUser(user);
@@ -75,41 +49,29 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public ServerResponse<User> login(String username, String password) {
-        //检查用户名是否存在
-        if (userDao.checkUsername(username) == 0) {
-            return ServerResponse.createFailResponseByMsg("用户名不存在");
-        }
         //校验用户名和加密后的密码
         User user = userDao.selectUserByUsernameAndPassword(username, MD5Utils.encrypt(password));
         //如果登录成功
         if (user != null) {
             return ServerResponse.createSuccessResponseByMsgAndData("登陆成功", user);
         }
-        return ServerResponse.createFailResponseByMsg("密码错误");
+        return ServerResponse.createFailResponseByMsg("用户名或密码错误");
     }
 
     @Override
     public ServerResponse<String> getQuestion(String username) {
-        //校验用户名是否存在
-        if (userDao.checkUsername(username) == 0) {
-            return ServerResponse.createFailResponseByMsg("用户不存在");
-        }
-        //查询该用户的问题
         String question = userDao.selectQuestionByUsername(username);
         //如果该用户没有设置问题
         if (StringUtils.isBlank(question)) {
             return ServerResponse.createFailResponseByMsg("用户没有设置问题");
         }
         //成功
-        return ServerResponse.createSuccessResponseByMsgAndData("成功", question);
+        return ServerResponse.createSuccessResponseByMsgAndData("获取成功", question);
     }
 
     @Override
     public ServerResponse<String> checkAnswer(String username, String question, String answer) {
-        //校验用户名
-        if (userDao.checkUsername(username) == 0) {
-            return ServerResponse.createFailResponseByMsg("用户名不存在");
-        }
+
         //校验问题的答案
         if (userDao.checkQuestionAndAnswer(username, question, answer) == 0) {
             return ServerResponse.createFailResponseByMsg("问题或答案错误");
@@ -118,6 +80,7 @@ public class UserServiceImpl implements UserService {
         String uuid = UUID.randomUUID().toString();
         //把Token加入本地缓存
         TokenCache.put(username, uuid);
+
         //把Token放入响应消息对象,并返回
         return ServerResponse.createSuccessResponseByMsgAndData("校验成功", uuid);
     }
@@ -157,20 +120,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public ServerResponse<User> updateUserInfo(User user) {
-        //如果需要更新邮箱，校验邮箱是否被其他用户占用
-        if (StringUtils.isNotBlank(user.getEmail())) {
-            int cnt = userDao.checkEmailByUserId(user.getEmail(), user.getId());
-            if (cnt > 0) {
-                return ServerResponse.createFailResponseByMsg("邮箱已存在");
-            }
-        }
-        //如果需要更新手机号码，校验手机号码是否被其他用户占用
-        if (StringUtils.isNotBlank(user.getPhone())) {
-            int cnt = userDao.checkPhoneByUserId(user.getPhone(), user.getId());
-            if (cnt > 0) {
-                return ServerResponse.createFailResponseByMsg("电话号码已存在");
-            }
-        }
+
         //更新用户信息
         int cnt = userDao.updateUserSelective(user);
         //如果更新成功，将新的用户信息放入响应消息对象并返回

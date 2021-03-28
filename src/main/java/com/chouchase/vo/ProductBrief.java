@@ -10,7 +10,6 @@ public class ProductBrief {
     private String mainImage;
     private BigDecimal price;
     private Integer status;
-    private String imageHost;
 
     public Integer getId() {
         return id;
@@ -68,11 +67,5 @@ public class ProductBrief {
         this.status = status;
     }
 
-    public String getImageHost() {
-        return imageHost;
-    }
 
-    public void setImageHost(String imageHost) {
-        this.imageHost = imageHost;
-    }
 }

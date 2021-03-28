@@ -8,28 +8,6 @@
         from mall_user
         where username = #{username}
     </select>
-    <select id="checkEmail" resultType="_int">
-        select count(1)
-        from mall_user
-        where email = #{email}
-    </select>
-    <select id="checkPhone" resultType="_int">
-        select count(1)
-        from mall_user
-        where phone = #{phone}
-    </select>
-    <select id="checkEmailByUserId" resultType="_int">
-        select count(1)
-        from mall_user
-        where email = #{email}
-          and id != #{id}
-    </select>
-    <select id="checkPhoneByUserId" resultType="_int">
-        select count(1)
-        from mall_user
-        where phone = #{phone}
-        and id != #{id}
-    </select>
     <insert id="insertUser">
         insert into mall_user(username, password, email, phone, question, answer, role, create_time, update_time)
         values (#{username}, #{password}, #{email}, #{phone}, #{question}, #{answer}, #{role}, now(), now())
@@ -112,5 +90,6 @@
             </if>
             update_time = now(),
         </set>
+            where id = #{id}
     </update>
 </mapper>

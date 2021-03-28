@@ -39,14 +39,5 @@ public class ManageCategoryController {
         return categoryService.changeCategoryName(id, name);
     }
 
-    @RequestMapping(value = "/get_category", method = RequestMethod.GET)
-    public ServerResponse<List<Category>> getCategory(@RequestParam(value = "parentId", defaultValue = "0") Integer parentId) {
 
-        return categoryService.getCategory(parentId);
-    }
-
-    @RequestMapping(value = "/get_deep_category", method = RequestMethod.GET)
-    public ServerResponse<Set<Integer>> getDeepCategory(@RequestParam(value = "parentId", defaultValue = "0") Integer parentId) {
-        return categoryService.getDeepCategoryId(parentId);
-    }
 }

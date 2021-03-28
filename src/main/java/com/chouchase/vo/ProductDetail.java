@@ -1,6 +1,7 @@
 package com.chouchase.vo;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 public class ProductDetail {
     private Integer id;
@@ -13,10 +14,9 @@ public class ProductDetail {
     private BigDecimal price;
     private Integer stock;
     private Integer status;
-    private String createTime;
-    private String updateTime;
+    private Date createTime;
+    private Date updateTime;
 
-    private String imageHost;
     private Integer parentCategoryId;
 
     public Integer getId() {
@@ -99,29 +99,23 @@ public class ProductDetail {
         this.status = status;
     }
 
-    public String getCreateTime() {
+    public Date getCreateTime() {
         return createTime;
     }
 
-    public void setCreateTime(String createTime) {
+    public void setCreateTime(Date createTime) {
         this.createTime = createTime;
     }
 
-    public String getUpdateTime() {
+    public Date getUpdateTime() {
         return updateTime;
     }
 
-    public void setUpdateTime(String updateTime) {
+    public void setUpdateTime(Date updateTime) {
         this.updateTime = updateTime;
     }
 
-    public String getImageHost() {
-        return imageHost;
-    }
 
-    public void setImageHost(String imageHost) {
-        this.imageHost = imageHost;
-    }
 
     public Integer getParentCategoryId() {
         return parentCategoryId;

@@ -54,13 +54,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public ServerResponse<List<Category>> getCategory(Integer parentId) {
-        //校验品类是否存在
-        if(parentId != 0){
-            int cnt = categoryDao.checkCategoryId(parentId);
-            if(cnt < 1){
-                return ServerResponse.createFailResponseByMsg("品类未找到");
-            }
-        }
+
         //获取子类别
         List<Category> list = categoryDao.selectCategoryByParentId(parentId);
         //将子类别加入响应消息对象
@@ -68,16 +62,10 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public ServerResponse<Set<Integer>> getDeepCategoryId(Integer parentId) {
-        //查询品类是否存在
-        if(parentId != 0){
-            int cnt = categoryDao.checkCategoryId(parentId);
-            if(cnt < 1){
-                return ServerResponse.createFailResponseByMsg("品类不存在");
-            }
-        }
+    public ServerResponse<List<Integer>> getDeepCategoryId(Integer parentId) {
+
         //层序遍历类别树，获取结果
-        List<Integer> list = null;
+        /*List<Integer> list = null;
         Queue<Integer> queue = new ArrayDeque<>();
         queue.add(parentId);
         Set<Integer> set = new HashSet<>();
@@ -91,8 +79,20 @@ public class CategoryServiceImpl implements CategoryService {
                     set.add(next);
                 }
             }
+        }*/
+        if(parentId != 0 && categoryDao.checkCategoryId(parentId) == 0){
+            return ServerResponse.createFailResponseByMsg("参数错误");
         }
-        return ServerResponse.createSuccessResponseByMsgAndData("获取成功",set);
+        List<Integer> res = new ArrayList<>();
+        Queue<Integer> queue = new ArrayDeque<>();
+        queue.add(parentId);
+        while(!queue.isEmpty()){
+            Integer curId = queue.poll();
+            res.add(curId);
+            List<Integer> list = categoryDao.selectCategoryIdByParentId(curId);
+            queue.addAll(list);
+        }
+        return ServerResponse.createSuccessResponseByMsgAndData("获取成功",res);
     }
 
 }

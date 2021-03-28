@@ -11,7 +11,7 @@ public class TokenCache {
             .newBuilder()
             .initialCapacity(1000)
             .maximumSize(10000)
-            .expireAfterWrite(30, TimeUnit.MINUTES)
+            .expireAfterWrite(5, TimeUnit.MINUTES)
             .build();
 
     public static void put(String key, String value) {

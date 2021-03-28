@@ -12,8 +12,8 @@ public class Const {
         int ADMIN = 2;
     }
     public interface Cart{
-        String LIMIT_NUM_SUCCESS = "LIMIT_NUM_SUCCESS";
-        String LIMIT_NUM_FAIL = "LIMIT_NUM_FAIL";
+        String LIMIT_NUM_SUCCESS = "未超过库存";
+        String LIMIT_NUM_FAIL = "已超库存，自动限制为最大可购买数量";
         Integer checked = 1;
         Integer unChecked = 0;
     }

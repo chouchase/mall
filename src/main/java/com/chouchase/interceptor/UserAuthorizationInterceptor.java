@@ -4,6 +4,7 @@ import com.chouchase.common.Const;
 import com.chouchase.common.ServerResponse;
 import com.chouchase.domain.User;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.lang.NonNullApi;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.servlet.http.HttpServletRequest;
@@ -11,7 +12,8 @@ import javax.servlet.http.HttpServletResponse;
 
 public class UserAuthorizationInterceptor implements HandlerInterceptor {
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+    public boolean preHandle(HttpServletRequest request,  HttpServletResponse response, Object handler) throws Exception {
+
         if(request.getSession(false) == null || request.getSession().getAttribute(Const.CURRENT_USER) == null){
             response.setContentType("application/json;charset=utf-8");
             ObjectMapper objectMapper = new ObjectMapper();
@@ -23,6 +25,7 @@ public class UserAuthorizationInterceptor implements HandlerInterceptor {
             ObjectMapper objectMapper = new ObjectMapper();
             String err = objectMapper.writeValueAsString(ServerResponse.createFailResponseByMsg("无权限"));
             response.getWriter().write(err);
+            return false;
         }
         return true;
     }

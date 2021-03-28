@@ -35,24 +35,40 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ServerResponse<String> updateOrAddProduct(Product product) {
-        //校验商品id的合法性、所属类别的合法性
-        if ((product.getId() != null && productDao.checkId(product.getId()) < 1) || product.getCategoryId() == null || categoryDao.checkCategoryId(product.getCategoryId()) < 1) {
-            return ServerResponse.createFailResponseByMsg("参数错误");
+        //防止接口恶意掉用
+        product.setCreateTime(null);
+        product.setUpdateTime(null);
+        //校验分类id是否合法
+        Integer categoryId = product.getCategoryId();
+        if (categoryId != null && categoryId != 0) {
+
+            int cnt = categoryDao.checkCategoryId(categoryId);
+            if (cnt == 0) {
+                return ServerResponse.createFailResponseByMsg("品类id不存在");
+            }
         }
         //选取subImage的第一张图片作为子图
-        if (!StringUtils.isBlank(product.getSubImages())) {
+        if (StringUtils.isNotBlank(product.getSubImages())) {
             String[] images = product.getSubImages().split(",");
             product.setMainImage(images[0]);
         }
         //如果id不等于空，代表更新商品
         if (product.getId() != null) {
-            //更新商品信息
+
+                //更新商品信息
             int cnt = productDao.updateProductSelective(product);
             if (cnt > 0) {
                 return ServerResponse.createSuccessResponseByMsg("商品更新成功");
             }
             return ServerResponse.createFailResponseByMsg("商品更新失败");
         } else {//否则添加新商品
+            if (StringUtils.isBlank(product.getName()) || product.getPrice() == null || product.getStock() == null) {
+                return ServerResponse.createFailResponseByMsg("参数错误");
+            }
+            if(product.getCategoryId() == null){
+                product.setCategoryId(0);
+            }
+            product.setStatus(1);
             int cnt = productDao.insertProduct(product);
             if (cnt > 0) {
                 return ServerResponse.createSuccessResponseByMsg("商品添加成功");
@@ -63,10 +79,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ServerResponse<String> setSaleStatus(Integer productId, Integer status) {
-        //查询商品是否存在
-        if (productDao.checkId(productId) < 1) {
-            return ServerResponse.createFailResponseByMsg("商品不存在");
-        }
+
         //更新商品状态
         if (productDao.updateProductStatus(productId, status) > 0) {
             return ServerResponse.createSuccessResponseByMsg("商品状态更新成功");
@@ -101,15 +114,15 @@ public class ProductServiceImpl implements ProductService {
         productDetail.setStatus(product.getStatus());
         productDetail.setStock(product.getStock());
 
-        productDetail.setImageHost(PropertiesUtil.getProperty("ftp.server.http.prefix"));
+
         Category category = categoryDao.selectCategoryById(product.getCategoryId());
         if (category == null) {
             productDetail.setParentCategoryId(0);
         } else {
             productDetail.setParentCategoryId(category.getParentId());
         }
-        productDetail.setCreateTime(DateUtil.dateToStr(product.getCreateTime()));
-        productDetail.setUpdateTime(DateUtil.dateToStr(product.getUpdateTime()));
+        productDetail.setCreateTime(product.getCreateTime());
+        productDetail.setUpdateTime(product.getUpdateTime());
         return productDetail;
     }
 
@@ -136,7 +149,6 @@ public class ProductServiceImpl implements ProductService {
         productBrief.setSubtitle(product.getSubtitle());
         productBrief.setMainImage(product.getMainImage());
         productBrief.setStatus(product.getStatus());
-        productBrief.setImageHost(PropertiesUtil.getProperty("ftp.server.http.prefix"));
         productBrief.setPrice(product.getPrice());
         return productBrief;
     }
@@ -163,7 +175,8 @@ public class ProductServiceImpl implements ProductService {
 
     }
 
-    private ServerResponse<PageInfo> getPageInfoServerResponse(List<Product> productList) {
+    private ServerResponse<PageInfo>
+    getPageInfoServerResponse(List<Product> productList) {
         List<ProductBrief> productBriefList = new ArrayList<>();
         for (Product product : productList) {
             productBriefList.add(assembleProductBrief(product));
@@ -172,13 +185,12 @@ public class ProductServiceImpl implements ProductService {
         pageInfo.setList(productBriefList);
         return ServerResponse.createSuccessResponseByMsgAndData("获取成功", pageInfo);
     }
-
     @Override
     public ServerResponse<ProductDetail> productDetail(Integer productId) {
         //从数据库获取product
         Product product = productDao.selectProductByPrimaryKey(productId);
         //如果商品不存在
-        if (product == null || product.getStatus() != Const.ProductStatus.ON_SALE) {
+        if (product == null ) {
             return ServerResponse.createFailResponseByMsg("商品不存在");
         }
 
@@ -195,12 +207,14 @@ public class ProductServiceImpl implements ProductService {
             keyword = null;
         }
         //获取该类别及其子类别的类别Id
-        Set<Integer> categoryIds = null;
+
+        List<Integer> categoryIds = null;
         if (categoryId != null) {
             categoryIds = categoryService.getDeepCategoryId(categoryId).getData();
         }
+
         //如果传来的类别无效并且关键字为空，返回空的结果集
-        if (keyword == null && categoryIds == null) {
+        if (keyword == null && categoryId != null &&categoryIds == null) {
             PageHelper.startPage(pageNum, pageSize);
             List<ProductBrief> productBriefList = new ArrayList<>();
             PageInfo pageInfo = new PageInfo(productBriefList);
@@ -216,7 +230,6 @@ public class ProductServiceImpl implements ProductService {
             String[] orderByArr = orderBy.split("_");
             PageHelper.orderBy(orderByArr[0] + " " + orderByArr[1]);
         }
-        System.out.println(keyword);
         //从数据库查询数据
         List<Product> productList = productDao.selectProductsByKeywordAndCategoryIds(keyword, categoryIds);
         //返回结果

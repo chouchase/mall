@@ -10,12 +10,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpSession;
 
-@Controller
+@RestController
 @RequestMapping(value = "/user")
-@ResponseBody
+
 public class UserController {
     @Autowired
     private UserService userService;
@@ -36,6 +37,9 @@ public class UserController {
     }
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     public ServerResponse<User> login(String username, String password, HttpSession session) {
+        if(session.getAttribute(Const.CURRENT_USER) != null){
+            return ServerResponse.createFailResponseByMsg("用户已登录");
+        }
         //参数校验
         if(StringUtils.isAnyBlank(username,password)){
             return ServerResponse.createFailResponseByMsg("参数错误");
@@ -66,26 +70,6 @@ public class UserController {
         return userService.checkUsername(username);
     }
 
-    @RequestMapping(value = "/check/phone", method = RequestMethod.GET)
-    public ServerResponse<String> checkPhone(String phone) {
-        //参数校验
-        if(StringUtils.isBlank(phone)){
-            return ServerResponse.createFailResponseByMsg("参数错误");
-        }
-
-        return userService.checkPhone(phone);
-    }
-
-    @RequestMapping(value = "/check/email", method = RequestMethod.GET)
-    public ServerResponse<String> checkEmail(String email) {
-        //参数校验
-        if(StringUtils.isBlank(email)){
-            return ServerResponse.createFailResponseByMsg("参数错误");
-        }
-
-        return userService.checkEmail(email);
-    }
-
 
     @RequestMapping(value = "/forget/get_question", method = RequestMethod.GET)
     public ServerResponse<String> getQuestion(String username) {
@@ -111,20 +95,19 @@ public class UserController {
         if(StringUtils.isAnyBlank(username,newPassword,resetToken)){
             return ServerResponse.createFailResponseByMsg("参数错误");
         }
-
         return userService.resetPassword(username, newPassword, resetToken);
     }
 
     @RequestMapping(value = "/reset_password", method = RequestMethod.POST)
-    public ServerResponse<String> updatePassword(HttpSession session, String oldPassword, String newPassowrd) {
+    public ServerResponse<String> updatePassword(HttpSession session, String oldPassword, String newPassword) {
         //参数校验
-        if(StringUtils.isAnyBlank(oldPassword,newPassowrd)){
+        if(StringUtils.isAnyBlank(oldPassword,newPassword)){
             return ServerResponse.createFailResponseByMsg("参数错误");
         }
         //获取当前登录的用户
         User user = (User) session.getAttribute(Const.CURRENT_USER);
         //通过用户Id修改密码
-        return userService.updatePassword(user.getId(), oldPassword, newPassowrd);
+        return userService.updatePassword(user.getId(), oldPassword, newPassword);
 
     }
 
