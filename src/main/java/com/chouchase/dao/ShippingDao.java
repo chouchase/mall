@@ -16,4 +16,6 @@ public interface ShippingDao {
 
     public List<Shipping> select(@Param("userId") Integer userId, @Param("id") Integer shippingId);
 
+    public int checkId(Integer shippingId);
+
 }

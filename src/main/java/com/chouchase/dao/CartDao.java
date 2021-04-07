@@ -29,4 +29,6 @@ public interface CartDao {
 
     public Integer countCartQuantity(Integer userId);
 
+    public List<Cart> selectByUserIdAndChecked(@Param("userId") Integer userId, @Param("checked") Integer checked);
+
 }

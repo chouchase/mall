@@ -60,4 +60,9 @@ update_time
             </if>
         </where>
     </select>
+    <select id="checkId" resultType="_int">
+        select count(1)
+        from mall_shipping
+        where id = #{shippingId}
+    </select>
 </mapper>

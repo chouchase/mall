@@ -29,4 +29,5 @@ public class Const {
         public static final int ON_SALE = 1;
         public static final int OFF_SALE = 0;
     }
+
 }

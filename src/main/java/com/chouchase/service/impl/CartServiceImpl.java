@@ -54,7 +54,7 @@ public class CartServiceImpl implements CartService {
     }
 
     //获取用户的CartVo对象,如果商品的数量超过库存限制，修改为库存限制
-    private CartVo getCartVoLimit(Integer userId) {
+    public CartVo getCartVoLimit(Integer userId) {
         //结果对象
         CartVo cartVo = new CartVo();
         //从数据库中查出该用户的购物车记录

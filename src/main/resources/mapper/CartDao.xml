@@ -70,4 +70,10 @@
             and product_id = #{productId}
         </if>
     </update>
+    <select id="selectByUserIdAndChecked" resultType="cart">
+        elect <include refid="base_column" />
+        from mall_cart
+        where user_id = #{userId}
+        and checked = #{checked}
+    </select>
 </mapper>

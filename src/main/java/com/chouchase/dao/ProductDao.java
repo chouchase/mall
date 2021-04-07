@@ -31,4 +31,5 @@ public interface ProductDao {
 
     //根据关键字和类别id查询商品
     public List<Product> selectProductsByKeywordAndCategoryIds(@Param("keyword") String keyword, @Param("categoryIds") List<Integer> categoryIds);
+
 }
