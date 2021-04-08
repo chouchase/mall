@@ -6,7 +6,7 @@ import java.util.Date;
 
 public class Order {
     private Integer id;
-    private BigInteger orderNo;
+    private Long orderNo;
     private Integer userId;
     private Integer shippingId;
     private BigDecimal payment;
@@ -28,11 +28,11 @@ public class Order {
         this.id = id;
     }
 
-    public BigInteger getOrderNo() {
+    public Long getOrderNo() {
         return orderNo;
     }
 
-    public void setOrderNo(BigInteger orderNo) {
+    public void setOrderNo(Long orderNo) {
         this.orderNo = orderNo;
     }
 

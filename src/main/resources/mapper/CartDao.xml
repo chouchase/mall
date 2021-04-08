@@ -76,4 +76,14 @@
         where user_id = #{userId}
         and checked = #{checked}
     </select>
+    <select id="selectCheckedCartByUserId" resultType="cart">
+        select <include refid="base_column" />
+        from mall_cart
+        where user_id = #{userId}
+        and checked = 1
+    </select>
+    <delete id="deleteByPrimaryKey">
+        delete from mall_cart
+        where id = #{id}
+    </delete>
 </mapper>

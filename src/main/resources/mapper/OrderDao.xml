@@ -8,6 +8,42 @@
     </sql>
     <insert id="insert">
         insert into mall_order(<include refid="base_column"/>)
-        values (#{id},#{orderNo},#{userId},#{shippingId},#{payment},#{paymentType},#{postage},#{status},#{paymentTime},#{sendTime},#{endTime},#{closeTime},#{createTime},#{updateTime})
+        values (#{id},#{orderNo},#{userId},#{shippingId},#{payment},#{paymentType},#{postage},#{status},#{paymentTime},#{sendTime},#{endTime},#{closeTime},now(),now())
     </insert>
+    <select id="selectByOrderNo" resultType="order">
+        select <include refid="base_column" />
+        from mall_order
+        where order_no = #{orderNo}
+    </select>
+    <select id="selectByUserIdAndOrderNo" resultType="order">
+        select <include refid="base_column" />
+        from mall_order
+        where user_id = #{userId}
+        and order_no = #{orderNo}
+    </select>
+    <update id="updateStatusByPrimaryKey" >
+        update mall_order
+        set status = #{status},update_time = now()
+        where id = #{id}
+    </update>
+    <select id="selectByUserId" resultType="order">
+        select <include refid="base_column" />
+        from mall_order
+        <where>
+            <if test="userId != null">
+                user_id = #{userId}
+            </if>
+        </where>
+        order by create_time desc
+    </select>
+    <update id="sendOrderByPrimaryKey">
+        update mall_order
+        set status = #{status},send_time = #{sendTime},update_time = now()
+        where id = #{id}
+    </update>
+    <update id="receiveByPrimaryKey">
+        update mall_order
+        set status = #{status},end_time = now(),update_time = now()
+        where id = #{id}
+    </update>
 </mapper>

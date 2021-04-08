@@ -65,4 +65,15 @@ update_time
         from mall_shipping
         where id = #{shippingId}
     </select>
+    <select id="selectByPrimaryKey" resultType="shipping">
+        select <include refid="base_column" />
+        from mall_shipping
+        where id = #{id}
+    </select>
+    <select id="check" resultType="_int">
+        select count(1)
+        from mall_shipping
+        where id = #{shippingId}
+        and user_id = #{userId}
+    </select>
 </mapper>

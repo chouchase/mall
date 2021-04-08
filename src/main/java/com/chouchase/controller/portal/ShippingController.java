@@ -27,6 +27,7 @@ public class ShippingController {
         //获取用户id
         Integer userId = ((User) session.getAttribute(Const.CURRENT_USER)).getId();
         shipping.setUserId(userId);
+        shipping.setId(null);
         return shippingService.add(shipping);
     }
     @RequestMapping(value = "/update",method = RequestMethod.GET)
@@ -34,6 +35,7 @@ public class ShippingController {
         //获取用户id
         Integer userId = ((User) session.getAttribute(Const.CURRENT_USER)).getId();
         shipping.setUserId(userId);
+
         return shippingService.update(shipping);
     }
     @RequestMapping(value = "/delete",method = RequestMethod.GET)

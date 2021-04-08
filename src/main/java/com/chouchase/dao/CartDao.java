@@ -31,4 +31,7 @@ public interface CartDao {
 
     public List<Cart> selectByUserIdAndChecked(@Param("userId") Integer userId, @Param("checked") Integer checked);
 
+    public List<Cart> selectCheckedCartByUserId(Integer userId);
+
+    public int deleteByPrimaryKey(Integer id);
 }

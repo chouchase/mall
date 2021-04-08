@@ -18,4 +18,8 @@ public interface ShippingDao {
 
     public int checkId(Integer shippingId);
 
+    public int check(@Param("userId") Integer userId,@Param("shippingId") Integer shippingId);
+
+    public Shipping selectByPrimaryKey(Integer id);
+
 }
