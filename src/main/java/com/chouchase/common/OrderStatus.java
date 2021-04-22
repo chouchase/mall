@@ -11,7 +11,7 @@ public enum OrderStatus {
 
     private int code;
     private String msg;
-    private OrderStatus(int code,String msg){
+    OrderStatus(int code,String msg){
         this.code = code;
         this.msg = msg;
     }

@@ -124,7 +124,7 @@ public class UserController {
         User currentUser = (User) session.getAttribute(Const.CURRENT_USER);
         //防止接口恶意调用
         user.setId(currentUser.getId());
-        user.setUsername(currentUser.getUsername());
+        user.setUsername(null);
         user.setPassword(null);
         user.setAnswer(null);
         user.setQuestion(null);
